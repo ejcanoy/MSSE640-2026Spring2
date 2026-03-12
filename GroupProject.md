@@ -22,6 +22,8 @@
 
 - Create a new repository called MSSE642-2026Spring
 
+### NOTE:  The screen shots below are examples.  Substiture appropriate values
+
 #### Figure 1
 ![alt text](images/figure1.png)
 
