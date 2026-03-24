@@ -22,6 +22,16 @@ class TriangleClassifierTest {
     }
 
     @Test
+    void shouldClassifyScaleneInAllOrders() {
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(4, 5, 6));
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(4, 6, 5));
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(5, 4, 6));
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(5, 6, 4));
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(6, 4, 5));
+        assertEquals(TriangleType.SCALENE, TriangleClassifier.classify(6, 5, 4));
+    }
+
+    @Test
     void shouldReturnInvalidForNonPositiveSides() {
         assertEquals(TriangleType.INVALID, TriangleClassifier.classify(0, 4, 4));
         assertEquals(TriangleType.INVALID, TriangleClassifier.classify(-1, 4, 4));
