@@ -1,0 +1,10 @@
+# Java / Maven
+**/target/
+
+# Node / frontend
+**/node_modules/
+**/dist/
+
+# OS / editor artifacts
+.DS_Store
+.vscode/

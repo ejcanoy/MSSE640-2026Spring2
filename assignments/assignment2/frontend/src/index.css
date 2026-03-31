@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #d1fae5 0%, #f0fdfa 40%, #ecfeff 100%);
+  min-height: 100vh;
+}
