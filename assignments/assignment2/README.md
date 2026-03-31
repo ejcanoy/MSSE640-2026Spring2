@@ -1,145 +1,203 @@
-# Assignment 2: Triangle Full-Stack Application
-
-This assignment extends the triangle program into a full-stack application with a Maven Spring Boot backend API and a React Tailwind frontend.
+# Assignment 2: APIs and Integration Testing with Postman
 
 ## Introduction
-This project is a full-stack triangle classifier. The backend exposes an API endpoint that validates and classifies triangles. The frontend provides a user-friendly form with three side inputs, inline validation, and result/error panels.
+This project demonstrates API design, integration testing, and full-stack usage using a Triangle API. The backend is a Spring Boot application with H2 database persistence and CRUD endpoints. The frontend is a React application used to submit triangle data and display results/history.
 
-Error handling is implemented in two layers:
-- Frontend validation catches missing, non-numeric, and non-positive values before calling the API.
-- Backend validation and triangle logic enforce correctness for server-side safety, including invalid triangle inequality cases.
+Main project goals:
+- Explain HTTP and API fundamentals.
+- Demonstrate API testing in Postman.
+- Show persistence behavior during CRUD operations.
+- Document request and error responses with screenshots.
 
-Testing strategy includes backend unit and API tests plus frontend component tests for validation behavior.
+## Project Overview
+Technology used:
+- Backend: Java 17, Spring Boot, Maven, Spring Data JPA, H2
+- Frontend: React, Vite, Tailwind CSS
+- Testing: JUnit, MockMvc, Vitest
+- API testing tool: Postman
 
-## Details of the Program
-- Backend language and framework: Java 17 with Spring Boot
-- Backend build tool: Maven
-- Frontend framework: React (Vite)
-- Frontend styling: Tailwind CSS
-- Backend tests: JUnit 5, Spring Boot Test, MockMvc
-- Frontend tests: Vitest, Testing Library
-- IDE used: Visual Studio Code
+Triangle API endpoints used for demo:
+- GET /api/triangles
+- GET /api/triangles/{id}
+- POST /api/triangles/classify
+- PUT /api/triangles/{id}
+- DELETE /api/triangles/{id}
 
-How data is entered:
-- User enters sideA, sideB, and sideC in the frontend form.
-- Frontend posts JSON payload to backend endpoint.
+## Part 1: Research on APIs and Integration Testing
 
-How output is produced:
-- Frontend displays validity, triangle type, and message from API response.
-- No file output is generated.
+### Basic Functionality of HTTP
+HTTP is an application-layer protocol used for communication between clients and servers over the web.
 
-Main files:
-- backend/src/main/java/edu/msse640/triangleapi/web/TriangleController.java
-- backend/src/main/java/edu/msse640/triangleapi/service/TriangleService.java
-- backend/src/test/java/edu/msse640/triangleapi/web/TriangleControllerTest.java
-- frontend/src/App.jsx
-- frontend/src/api.js
-- frontend/src/App.test.jsx
+Core concepts:
+- Client: The caller that sends a request, such as a browser, mobile app, curl command, or Postman.
+- Server: The application that receives requests and returns responses, such as a Spring Boot API.
+- Request: The message sent by the client containing method, URL, headers, and optional body.
+- Response: The message sent back by the server containing status code, headers, and optional body.
+- Headers vs Body:
+  - Headers carry metadata such as content type, authorization token, and caching rules.
+  - Body carries the main payload, usually JSON for APIs.
+- Status codes indicate result category:
+- 2xx success, 3xx redirect, 4xx client error, 5xx server error.
 
-## Table with Example Test Data
-| Input Sides | Expected Valid? | Expected Type | Purpose |
-| --- | --- | --- | --- |
-| 3, 4, 5 | Yes | SCALENE | Normal valid scalene case |
-| 5, 5, 5 | Yes | EQUILATERAL | All equal sides |
-| 5, 5, 3 | Yes | ISOSCELES | Two equal sides |
-| 1, 2, 3 | No | INVALID | Triangle inequality violation |
-| 0, 4, 4 | No | INVALID or validation error | Rainy day: zero side |
-| -1, 4, 4 | No | INVALID or validation error | Rainy day: negative side |
+Common HTTP verbs:
+- GET: Read/fetch data.
+- POST: Create a new resource or execute a creation/classification action.
+- PUT: Update a resource.
+- DELETE: Remove a resource.
 
-## Unit Tests
-Backend tests:
-- TriangleServiceTest:
-  - shouldClassifyEquilateralTriangle
-  - shouldClassifyIsoscelesTriangle
-  - shouldClassifyScaleneTriangleInAllOrders
-  - shouldReturnInvalidForZeroOrNegativeInput
-  - shouldReturnInvalidWhenTriangleInequalityFails
-- TriangleControllerTest:
-  - shouldClassifyScaleneTriangle
-  - shouldReturnInvalidForTriangleInequalityFailure
-  - shouldReturnBadRequestForZeroLengthSide
+Why HTTP is stateless:
+- Stateless means each request is independent and includes all needed context.
+- The server does not automatically remember prior requests from the same client.
+- This improves scalability and reliability, but often requires tokens, session IDs, or other mechanisms when continuity is needed.
 
-Frontend tests:
-- App.test.jsx:
-  - shows validation messages when fields are missing
+### Role of APIs in Modern Applications
+APIs allow separate systems to communicate through a defined contract. Modern applications use APIs for frontend-backend communication, third-party integrations, and microservices.
 
-Why these tests were chosen:
-- They verify required triangle classification behavior.
-- They cover rainy day input handling.
-- They verify API endpoint behavior and client-side validation UX.
+Open APIs:
+- Open API can mean a publicly available API and can also refer to the OpenAPI Specification format used to document APIs.
+- They are important because they improve interoperability, developer onboarding, testing automation, and integration speed.
 
-## Bugs Encountered During Testing
-- Frontend test initially failed because the submit button was disabled when fields were empty.
-- Fix: submit now remains enabled unless loading, so validation can run and show inline errors.
+Modern Open API usage example:
+- Weather applications commonly use the OpenWeather API to fetch current weather and forecasts by city or coordinates.
+- The client app calls API endpoints, receives JSON, and renders weather details in UI.
+- This avoids building and maintaining a global weather data collection pipeline from scratch.
 
-## Problems
-- First backend test run required many dependency downloads, which made logs very long.
-- Keeping frontend and backend validation messages consistent required careful handling.
+### Cross-Origin Resource Sharing (CORS)
+CORS is a browser security mechanism controlling whether a web app on one origin can access a resource on another origin.
 
-## Three Inputs You Can Try Now
-1. sideA=3, sideB=4, sideC=5 expected valid, SCALENE
-2. sideA=5, sideB=5, sideC=5 expected valid, EQUILATERAL
-3. sideA=1, sideB=2, sideC=3 expected invalid triangle
+Example in this project:
+- Frontend origin: http://localhost:5173
+- Backend origin: http://localhost:8080
+- Because origins differ, the backend must explicitly allow cross-origin requests.
 
-## Screenshots
-Add your screenshots in this folder and reference them below:
-- images/backend-tests.png
-- images/frontend-run.png
+If CORS is not configured correctly:
+- Browser blocks the request before the response is available to JavaScript.
 
-## What Is Included
-- Spring Boot backend API in backend
-- React Tailwind frontend in frontend
-- Automated backend tests
-- Automated frontend test
-- Rubric-aligned writeup in this README
+### How APIs Are Secured
+Common API security methods:
+- HTTPS to encrypt traffic in transit.
+- API keys for basic client identification.
+- OAuth 2.0 and OpenID Connect for delegated authorization and identity.
+- JWT bearer tokens for stateless auth in headers.
+- Role-based authorization on protected routes.
+- Rate limiting, input validation, and logging for abuse prevention.
 
-## Project Structure
-- backend/pom.xml
-- backend/src/main/java/edu/msse640/triangleapi
-- backend/src/test/java/edu/msse640/triangleapi
-- frontend/package.json
-- frontend/src/App.jsx
-- frontend/src/App.test.jsx
-- images
+To access a secure API, a client typically must:
+1. Register an application and get credentials.
+2. Obtain an access token or API key.
+3. Send credentials in request headers.
+4. Call only endpoints allowed by granted scopes/roles.
 
-## Build and Test
-Backend:
+### Five Public Open APIs
+1. OpenWeather API: https://openweathermap.org/api
+2. NASA Open APIs: https://api.nasa.gov
+3. Open-Meteo API: https://open-meteo.com
+4. PokeAPI: https://pokeapi.co
+5. REST Countries API: https://restcountries.com
 
-cd backend
-mvn test
-mvn package
+### Sources
+1. MDN HTTP Overview: https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview
+2. RFC 9110 HTTP Semantics: https://www.rfc-editor.org/rfc/rfc9110
+3. MDN CORS Guide: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+4. OpenAPI Initiative: https://www.openapis.org
+5. OWASP API Security Top 10: https://owasp.org/API-Security/
 
-Frontend:
+## Part 2: Postman Video Demo or Test Document with Screenshots
 
-cd frontend
-npm install
-npm test
-npm run build
+### Postman Setup Checklist
+1. Create a collection named Triangle API Integration Tests.
+2. Create an environment named Local Triangle API.
+3. Add environment variable url with value http://localhost:8080.
+4. Refactor all requests to use {{url}}.
+5. Create and run at least 6 requests.
 
-## Run the Program
-Start backend:
+Recommended request list:
+1. GET {{url}}/api/triangles
+2. POST {{url}}/api/triangles/classify (valid triangle)
+3. POST {{url}}/api/triangles/classify (invalid triangle)
+4. GET {{url}}/api/triangles/{id}
+5. PUT {{url}}/api/triangles/{id}
+6. DELETE {{url}}/api/triangles/{id}
+7. GET {{url}}/api/triangles/{id} after delete (expect error)
 
-cd backend
-mvn spring-boot:run
+### CRUD Persistence Discussion
+Persistence behavior in this API:
+- Data is persisted in H2 while the backend process is running.
+- POST /classify stores both valid and invalid triangle submissions.
+- PUT updates existing triangle records.
+- DELETE removes the record.
 
-Start frontend (new terminal):
+Important note:
+- The current database is in-memory, so data resets when the application restarts.
 
-cd frontend
-npm install
-npm run dev
+### Example Returned Data
+Example success response from classify:
+~~~JSON
+ {
+   "id": 2,
+   "valid": true,
+   "triangleType": "SCALENE",
+   "message": "Triangle classified successfully."
+ }
+~~~
 
-Frontend URL:
-- http://localhost:5173
+Example listing response:
+~~~JSON
+ [
+   {
+     "id": 1,
+     "sideA": 3.0,
+     "sideB": 4.0,
+     "sideC": 5.0,
+     "valid": true,
+     "triangleType": "SCALENE"
+   }
+ ]
+~~~
 
-Backend API URL:
-- http://localhost:8080/api/triangles/classify
+Example error response:
+- Request: GET /api/triangles/999999
+- Response: 404 Not Found
 
-## Notes for Submission
-- Merge your final work into main before submitting.
-- Submit your GitHub repository link in WorldClass based on your instructor instructions.
-- If group submission, add all group member names below.
+### Postman Collection and Environment
+![Postman Collection Overview](images/postman/a2_collection.png)
+![Postman Environment Variables](images/postman/a2_environment.png)
 
-## Group Information
-- Member 1:
-- Member 2:
-- Member 3:
+### Postman Requests and Responses
+![Request 01 GET All Triangles](images/postman/a2_get_all.png)
+![Request 02 POST Classify Valid](images/postman/a2_post.png)
+![Request 03 GET By Id](images/postman/a2_get.png)
+![Request 04 PUT Update Triangle](images/postman/a2_put.png)
+![Request 05 DELETE Triangle](images/postman/a2_delete.png)
+![Request 06 Errror](images/postman/a2_error.png)
+
+### UI Screenshots
+![UI Main Page](images/ui/a2_ui.png)
+
+## Extra Credit: curl Operations
+Run at least 3 curl requests and capture screenshots.
+
+Suggested curl commands:
+~~~zsh
+1. curl -s http://localhost:8080/api/triangles
+2. curl -s -X POST http://localhost:8080/api/triangles/classify -H "Content-Type: application/json" -d "{\"sideA\":3,\"sideB\":4,\"sideC\":5}"
+3. curl -s http://localhost:8080/api/triangles/999999
+~~~
+
+![Curl Request 1](images/curl/a2_curl.png)
+
+Curl advantages over Postman:
+- Fast to run from terminal and easy to automate.
+- Great for scripting, CI pipelines, and repeatable checks.
+- Easy to version-control as shell scripts.
+
+## Conclusion and Recommendations
+This assignment showed how HTTP, APIs, CORS, and security concepts apply in a real implementation and how Postman supports integration testing workflows. The Triangle API demonstrated CRUD operations, JSON handling, and error behavior in a practical way.
+
+Recommendations:
+1. Keep an exported Postman collection in the repository.
+2. Add persistent file-based or server-based database configuration for non-demo usage.
+3. Add authentication before deployment to shared environments.
+4. Add negative test cases to Postman tests for validation and error codes.
+
+

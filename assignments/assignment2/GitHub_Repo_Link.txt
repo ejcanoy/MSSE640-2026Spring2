@@ -1,4 +1,0 @@
-Assignment 2 GitHub Repository Link
-
-Use your fork repository URL for WorldClass submission:
-https://github.com/ejcanoy/MSSE640-2026Spring2
