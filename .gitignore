@@ -8,3 +8,4 @@
 # OS / editor artifacts
 .DS_Store
 .vscode/
+assignments/assignment3/results/*.jtl
